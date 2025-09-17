@@ -256,7 +256,12 @@
                 "rightColumnText": "A typical scene from the era of traditional pop.",
                 "fullText": "The image captures the aesthetic of the time, with performers in formal attire, often in a nightclub or theater setting, which was the primary venue for these stars."
             }
-        ]
+        ],
+        "poll": {
+            "q": "How did many popular singers in the 1940s begin their careers?",
+            "choices": ["Acting in Hollywood films", "Starring in Broadway musicals", "Singing with a big band", "Attending a conservatory"],
+            "answer": 2
+        }
     },
     {
         "id": "8.02",
@@ -1121,12 +1126,8 @@ function startApp() {
       const bulletsHTML = (d.bullets||[]).length > 0 ? `<h4>Key points</h4><ul>${(d.bullets||[]).map(b=>`<li>${b}</li>`).join('')}</ul>` : '';
       
       let mediaContent = (d.media||[]).map(m=> {
-          if (m.embedHTML) {
-              return `<li>${m.embedHTML}</li>`;
-          } else if(m.href) {
+          if (m.href) {
               return `<li><a href="${m.href}" target="_blank" rel="noopener">${m.label}</a></li>`;
-          } else if (m.isSong) {
-              return `<li>${m.label}</li>`;
           }
           return '';
       }).join('');
