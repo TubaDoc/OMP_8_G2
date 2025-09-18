@@ -115,9 +115,58 @@
   .overlay-card input{width:100%;box-sizing:border-box;margin-bottom:1rem;text-align:center}
   .overlay-card button{width:100%;margin-bottom:.5rem}
   .overlay-card hr{border-color:var(--line);margin:1rem 0}
+
+  /* --- Accessibility Additions --- */
+  #accessibility-controls {
+    position: fixed;
+    top: .5rem;
+    right: .5rem;
+    z-index: 10003;
+  }
+  #contrast-toggle-btn {
+    background: #233046;
+    color: #e8ebf0;
+    border: 1px solid #262a35;
+    font-weight: bold;
+    padding: .5rem .85rem;
+    border-radius: .45rem;
+    cursor: pointer;
+  }
+  .read-aloud-btn {
+    background: #233046;
+    color: #e8ebf0;
+    border: 1px solid #262a35;
+    padding: .3rem .6rem;
+    border-radius: .45rem;
+    cursor: pointer;
+    font-size: .8em;
+  }
+  
+  body.high-contrast-mode {
+    --bg: #000000;
+    --ink: #ffffff;
+    --muted: #dddddd;
+    --card: #000000;
+    --line: #ffffff;
+    --brand: #ffff00;
+    --accent: #ffff00;
+  }
+  body.high-contrast-mode .profile-btn,
+  body.high-contrast-mode .add-content-btn {
+    background: var(--accent);
+    color: #000;
+    text-shadow: none;
+  }
+   body.high-contrast-mode a {
+    color: var(--accent);
+   }
 </style>
 </head>
 <body>
+  <div id="accessibility-controls">
+    <button id="contrast-toggle-btn" title="Toggle High Contrast Mode">🎨</button>
+  </div>
+
   <header class="top" id="main-header">
     <div class="app brand">
       <h1>Lesson 8: Traditional Pop in the 1940s and 50s</h1>
@@ -217,14 +266,14 @@
         "id": "8.00a",
         "title": "Lesson 8: Traditional Pop in the 1940s and 50s",
         "bullets": [],
-        "full": "<img src='https://i.imgur.com/0RLPf1d.png' alt='Traditional Pop collage' style='width:100%; border-radius: .4rem;'/>",
+        "full": "<img src='https://i.imgur.com/0RLPf1d.png' alt='A collage of traditional pop artists from the 1940s and 50s, including Frank Sinatra, Doris Day, and Perry Como.' style='width:100%; border-radius: .4rem;'/>",
         "deep": []
     },
     {
         "id": "8.00b",
         "title": "Chapter Synopsis Video",
         "bullets": ["Watch this short video for an overview of this chapter's content."],
-        "full": "<div style='position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;'><iframe src='https://player.vimeo.com/video/762001186?autoplay=1' style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;' frameborder='0' allow='autoplay; fullscreen' allowfullscreen></iframe></div>",
+        "full": "<div style='position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;'><iframe src='https://player.vimeo.com/video/762001186?autoplay=1' style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;' frameborder='0' allow='autoplay; fullscreen' allowfullscreen title='Chapter Synopsis Video'></iframe></div>",
         "deep": []
     },
     {
@@ -254,6 +303,7 @@
             {
                 "title": "The Sound of an Era",
                 "image": "https://i.imgur.com/nhDA8cG.jpeg",
+                "altText": "A black and white photo of a classic 1940s nightclub scene with a female vocalist singing at a microphone in front of a big band.",
                 "rightColumnText": "A typical scene from the era of traditional pop.",
                 "fullText": "The image captures the aesthetic of the time, with performers in formal attire, often in a nightclub or theater setting, which was the primary venue for these stars."
             }
@@ -278,6 +328,7 @@
             {
                 "title": "Louis Armstrong (1901-1971)",
                 "image": "https://i.imgur.com/mNLbQsL.jpeg",
+                "altText": "A charismatic, smiling portrait of Louis Armstrong holding his trumpet.",
                 "rightColumnText": "\"My whole life, my whole soul, my whole spirit is to blow that horn.\"",
                 "media": [
                     {"label": "They Can’t Take That Away From Me ♫", "href": "https://open.spotify.com/track/094P9Go47bQKJ5Do15lt69?si=b6e8cb552b4b4352"},
@@ -311,6 +362,7 @@
             {
                 "title": "Frank Sinatra (1915-1998)",
                 "image": "https://i.imgur.com/UGezMJg.jpeg",
+                "altText": "A black and white portrait of a young Frank Sinatra in a suit and fedora, looking thoughtfully to the side.",
                 "fullText": "Acclaimed as both a singer and an actor, Frank Sinatra is the most important link between Tin Pan Alley and the rise of rock and roll. Born in Hoboken, New Jersey to Italian immigrants, he began his career as a big band singer. In the 1950s Sinatra proved that he was also a talented actor, winning an Oscar for Best Supporting Actor in *From Here to Eternity* (1953). Later in life he continued to enjoy success with his 1993 album *Duets* and the Grammy award winning *Duets II* (1994). <br><br><i>\"When I sing, I believe. I'm honest... You have to reach out to them with total honesty and humility.\"</i>",
                 "bullets": [
                     "Began with Harry James (1939) and Tommy Dorsey (1940-1942) bands.",
@@ -356,6 +408,7 @@
             {
                 "title": "Rosemary Clooney (1928-2002)",
                 "image": "https://i.imgur.com/Cdbh9dJ.jpeg",
+                "altText": "A glamorous studio headshot of Rosemary Clooney from the 1950s.",
                 "rightColumnText": "A versatile singer and actress, Rosemary Clooney was one of the most popular female vocalists of the 1950s.",
                 "media": [
                     {"label": "Beautiful Brown Eyes ♫", "href": "https://open.spotify.com/track/0M1uwzjENOO4nD1K4PYijC?si=187bac43d1544652"},
@@ -381,6 +434,7 @@
             {
                 "title": "Tony Bennett (1926-2023)",
                 "image": "https://i.imgur.com/8Ezom8y.jpeg",
+                "altText": "A smiling, recent photo of Tony Bennett in a suit.",
                  "bullets": [
                     "Discovered by comedian Bob Hope.",
                     "Signed with Columbia Records and had a string of hits.",
@@ -410,6 +464,7 @@
             {
                 "title": "Perry Como (1912-2001)",
                 "image": "https://i.imgur.com/8VtTqza.jpeg",
+                "altText": "A portrait of a smiling Perry Como in a sweater.",
                 "fullText": "One of the most recognizable crooners of the 1940s and 1950s, Perry Como was born to a large Italian-American family. He began with a local big band in 1933 and joined Ted Weems’s band in 1936, where his warm baritone voice made him a hit. After the band broke up, Como signed with RCA records in 1943. In the 1950s he began a successful career as a television host on *The Kraft Musical Hall* from 1959–1963. He emerged from semi-retirement in 1970 to perform in Las Vegas for the first time in over twenty years, followed by his hit “It’s Impossible.”",
                 "bullets": [
                     "Began touring with a big band in 1933.",
@@ -452,6 +507,7 @@
             {
                 "title": "Doris Day (1922-2019)",
                 "image": "https://i.imgur.com/BgJctBF.jpeg",
+                "altText": "A publicity photo of a smiling Doris Day.",
                 "rightColumnText": "\"When I recorded for Columbia, I could usually do anything in one take...I would invariably want to use the first take because that would be the one that was spontaneous and fresh.\"",
                 "bullets": [
                     "Began as a big band singer with Les Brown.",
@@ -488,6 +544,7 @@
             {
                 "title": "Patti Page (1927-2013)",
                 "image": "https://i.imgur.com/bdHbKWO.jpeg",
+                "altText": "A black and white portrait of singer Patti Page.",
                 "fullText": "Patti Page scored hits on both the country and pop charts. Born in Tulsa, Oklahoma, she began singing country songs on local radio as a teenager. She became the first singer to overdub her own voice on her 1947 hit “Confess,”. Her string of 1950s hits led to regular appearances on shows like *The Dean Martin Show* and *The Ed Sullivan Show*. By the early 1970s, she shifted her career focus back to country music and continued to perform until 2012.",
                 "bullets": [
                     "Most successful female artist of the 1950s.",
@@ -531,6 +588,7 @@
             {
                 "title": "Connee Boswell (1907-1976)",
                 "image": "https://i.imgur.com/oEQAue5.jpeg",
+                "altText": "A black and white photo of Connee Boswell singing into a large, classic radio microphone.",
                 "fullText": "An important though underrated jazz vocalist, Connee Boswell began her career with her sisters in New Orleans. The Boswell Sisters had a few hits before breaking up in 1935. Connee began her solo career that same year and recorded a string of hits with Bing Crosby. Though she contracted polio at age four, she had a successful performing and film career. Her vocal style was influenced by blues singers like Bessie Smith and she, in turn, was a profound influence on Ella Fitzgerald.",
                 "bullets": [
                     "Group's first hit was “Cryin’ Blues” in 1925.",
@@ -573,6 +631,7 @@
             {
                 "title": "The Andrews Sisters",
                 "image": "https://i.imgur.com/vyOOL8x.jpeg",
+                "altText": "A promotional photo of the three Andrews Sisters smiling in matching outfits.",
                 "bullets": [
                     "Most popular female trio of the 1940s.",
                     "Became favorites of military forces in WWII.",
@@ -603,6 +662,7 @@
             {
                 "title": "The Golden Gate Quartet",
                 "image": "https://i.imgur.com/0dsZ784.jpeg",
+                "altText": "A photo of the four members of The Golden Gate Quartet dressed in suits and singing together.",
                  "bullets": [
                     "Successful Black gospel-pop group.",
                     "Performed at Carnegie Hall in 1938.",
@@ -630,6 +690,7 @@
             {
                 "title": "The Ink Spots",
                 "image": "https://i.imgur.com/sLfbnJd.jpeg",
+                "altText": "A group photo of The Ink Spots, with four members dressed in matching light-colored suits.",
                  "bullets": [
                     "Formed in 1934.",
                     "Signature style included high falsetto lead and a spoken baritone bridge.",
@@ -1169,7 +1230,7 @@ function startApp() {
             <div style="text-align: left;">
                 <div style="display: flex; flex-wrap: nowrap; gap: 1.5rem; align-items: flex-start; margin-bottom: 1rem;">
                     <div style="flex: 0 0 250px; min-width: 200px;">
-                        <img alt="${d.title}" src="${d.image}" style="width: 100%; height: auto; border-radius: .4rem;">
+                        <img alt="${d.altText || d.title}" src="${d.image}" style="width: 100%; height: auto; border-radius: .4rem;">
                     </div>
                     <div style="flex: 1 1 auto;">
                         ${rightColumnTextHTML}
@@ -1272,7 +1333,13 @@ function startApp() {
       
       host.insertAdjacentHTML('beforeend', `
         <section class="slide" id="slide-${idx}" data-ix="${idx}" aria-labelledby="h-${s.id}">
-          <header class="slide-head"><h2 id="h-${s.id}">${s.title}</h2><div class="meter">Slide ${idx+1} of ${total}</div></header>
+          <header class="slide-head">
+            <h2 id="h-${s.id}">${s.title}</h2>
+            <div style="display: flex; align-items: center; gap: .5rem;">
+              <div class="meter">Slide ${idx+1} of ${total}</div>
+              <button class="read-aloud-btn" id="read-aloud-btn-${idx}" onclick="readSlideAloud(${idx})">🔊 Read Aloud</button>
+            </div>
+          </header>
           <ul class="bullets">${bullets}</ul>
           ${s.full ? `<button class="read-btn" onclick="toggleFull(${idx})">Read Full Text</button>` : ''}
           <article id="full-${idx}" class="full" hidden>${s.full}</article>
@@ -1332,7 +1399,7 @@ function startApp() {
     document.getElementById('m-title').textContent = title;
     if (d.image) {
         mBody.className = 'modal-body split-layout';
-        mBody.innerHTML = `<div class="modal-image-container"><img alt="${d.title}" src="${d.image}"></div><div class="modal-text-container">${summaryHTML}${bulletsHTML}${extraHTML}${mediaHTML}${extended}</div>`;
+        mBody.innerHTML = `<div class="modal-image-container"><img alt="${d.altText || d.title}" src="${d.image}"></div><div class="modal-text-container">${summaryHTML}${bulletsHTML}${extraHTML}${mediaHTML}${extended}</div>`;
     } else {
         mBody.className = 'modal-body';
         mBody.innerHTML = `${summaryHTML}${bulletsHTML}${extraHTML}${mediaHTML}${extended}`;
@@ -1414,9 +1481,68 @@ function startApp() {
       document.getElementById('scrim').classList.toggle('active');
     }
   }
+  
+  // --- ACCESSIBILITY FUNCTIONS ---
+  function toggleHighContrast() {
+    document.body.classList.toggle('high-contrast-mode');
+    const isHighContrast = document.body.classList.contains('high-contrast-mode');
+    localStorage.setItem('highContrast', isHighContrast);
+  }
+
+  function readSlideAloud(slideIndex) {
+    const btn = document.getElementById(`read-aloud-btn-${slideIndex}`);
+    if (speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+      if(btn) btn.textContent = '🔊 Read Aloud';
+      return;
+    }
+
+    const slideEl = document.getElementById(`slide-${slideIndex}`);
+    if (!slideEl) return;
+
+    let textToRead = [];
+    const title = slideEl.querySelector('h2');
+    if (title) textToRead.push(title.textContent);
+
+    const bullets = slideEl.querySelectorAll('.bullets li');
+    if (bullets.length > 0) {
+      textToRead.push("Bullet points:");
+      bullets.forEach(li => textToRead.push(li.textContent));
+    }
+    
+    const fullText = slideEl.querySelector('article.full');
+    if (fullText && !fullText.hidden) {
+       textToRead.push("Full text:");
+       textToRead.push(fullText.textContent);
+    }
+    
+    const images = slideEl.querySelectorAll('img');
+    if (images.length > 0) {
+      images.forEach((img, index) => {
+        if(img.alt) {
+          textToRead.push(`Image ${index + 1} description: ${img.alt}`);
+        }
+      });
+    }
+    
+    const fullSpeech = textToRead.join('. ');
+    const utterance = new SpeechSynthesisUtterance(fullSpeech);
+    
+    utterance.onstart = () => {
+        if(btn) btn.textContent = '■ Stop Reading';
+    };
+    
+    utterance.onend = () => {
+        if(btn) btn.textContent = '🔊 Read Aloud';
+    };
+
+    speechSynthesis.speak(utterance);
+  }
+
 
   // --- GLOBAL EVENT LISTENERS ---
   document.getElementById('modalClose').addEventListener('click', hideModal);
+  document.getElementById('contrast-toggle-btn').addEventListener('click', toggleHighContrast);
   document.getElementById('scrim').addEventListener('click', ()=>{
       hideModal();
       if(document.getElementById('qna-panel').classList.contains('active')){
@@ -1437,6 +1563,9 @@ function startApp() {
   });
 
   document.addEventListener('DOMContentLoaded', ()=>{ 
+    if (localStorage.getItem('highContrast') === 'true') {
+      document.body.classList.add('high-contrast-mode');
+    }
     initializeUserSession();
   });
   
@@ -1452,6 +1581,7 @@ function startApp() {
   window.toggleQnaPanel = toggleQnaPanel;
   window.submitQuestion = submitQuestion;
   window.upvoteQuestion = upvoteQuestion;
+  window.readSlideAloud = readSlideAloud;
   
 </script>
 </body>
