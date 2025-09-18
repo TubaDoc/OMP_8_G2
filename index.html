@@ -263,6 +263,8 @@
   let isPresenter = false; 
   let ix = 0; 
   let slidesEls;
+  let timerInterval = null;
+  let timerStartTimeout = null;
   
   // ==================================================================
   // --- LESSON CONTENT ---
@@ -1064,7 +1066,6 @@ function startApp() {
   // Quiz Battle
   const BATTLE_QUIZ = QUIZ;
   let localAnswers = {}; 
-  let timerInterval = null;
 
   async function setupQuizBattleListener() {
     const battleStateRef = doc(db, `${sessionDataPath}/quizState/battle`);
@@ -1095,6 +1096,7 @@ function startApp() {
     const questionArea = document.getElementById('quiz-question-area'), controlsArea = document.getElementById('quiz-controls'), feedbackArea = document.getElementById('quiz-feedback'), timerArea = document.getElementById('quiz-timer');
     if (!questionArea || !controlsArea || !feedbackArea || !timerArea) return;
     clearInterval(timerInterval);
+    clearTimeout(timerStartTimeout);
 
     if (state.status === 'waiting' || state.currentQuestion === -1) {
       questionArea.innerHTML = '<p>The quiz battle is about to begin!</p>';
@@ -1131,26 +1133,27 @@ function startApp() {
       const startTime = state.questionStartTime;
       timerArea.textContent = 'Get Ready...';
       
-      setTimeout(() => {
-        if (localAnswers[qIndex] !== undefined) return; // Don't start timer if already answered
-        timerInterval = setInterval(() => {
-            const elapsedSeconds = (new Date().getTime() - startTime) / 1000;
-            if (elapsedSeconds >= 15) {
-                timerArea.textContent = '0 points';
-                clearInterval(timerInterval);
-                if (localAnswers[qIndex] === undefined) {
-                    document.querySelectorAll('.choice-btn').forEach(btn => btn.disabled = true);
-                    const correctBtn = document.getElementById(`choice-${question.answer}`);
-                    if (correctBtn) correctBtn.classList.add('correct');
-                    if (feedbackArea) feedbackArea.textContent = "Time's up!";
-                }
-            } else {
-                timerArea.textContent = `${Math.round(1000 * (1 - (elapsedSeconds / 15)))} points`;
-            }
-        }, 100);
-      }, 5000);
-
-      if(localAnswers[qIndex] !== undefined) {
+      if(localAnswers[qIndex] === undefined) { 
+          timerStartTimeout = setTimeout(() => {
+              timerInterval = setInterval(() => {
+                  const elapsedSeconds = (new Date().getTime() - startTime) / 1000;
+                  if (elapsedSeconds >= 20) { // Total time: 5s grace + 15s scoring
+                      timerArea.textContent = '0 points';
+                      clearInterval(timerInterval);
+                      if (localAnswers[qIndex] === undefined) {
+                          document.querySelectorAll('.choice-btn').forEach(btn => btn.disabled = true);
+                          const correctBtn = document.getElementById(`choice-${question.answer}`);
+                          if (correctBtn) correctBtn.classList.add('correct');
+                          if (feedbackArea) feedbackArea.textContent = "Time's up!";
+                      }
+                  } else if (elapsedSeconds >= 5) { // Scoring period
+                      const scoringSeconds = elapsedSeconds - 5;
+                      const points = Math.round(1000 * (1 - (scoringSeconds / 15)));
+                      timerArea.textContent = `${points} points`;
+                  }
+              }, 100);
+          }, 5000);
+      } else {
           showAnswerFeedback(qIndex, localAnswers[qIndex]);
       }
     }
@@ -1182,11 +1185,14 @@ function startApp() {
       if (localAnswers[qIndex] !== undefined) return;
       localAnswers[qIndex] = choiceIndex;
       clearInterval(timerInterval);
+      clearTimeout(timerStartTimeout);
+
       const question = BATTLE_QUIZ[qIndex], isCorrect = question.answer === choiceIndex;
       const scoreRef = doc(db, `${sessionDataPath}/scores/${userId}`);
+      
+      const elapsedSeconds = (new Date().getTime() - questionStartTime) / 1000;
 
       if (isCorrect) {
-          const elapsedSeconds = (new Date().getTime() - questionStartTime) / 1000;
           let points = (elapsedSeconds >= 5 && elapsedSeconds < 20) ? Math.round(1000 * (1 - ((elapsedSeconds-5) / 15))) : 0;
           await setDoc(scoreRef, { correctAnswers: increment(1), timePoints: increment(points) }, { merge: true });
       } else {
