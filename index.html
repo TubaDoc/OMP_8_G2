@@ -127,10 +127,11 @@
     background: #233046;
     color: #e8ebf0;
     border: 1px solid #262a35;
-    padding: 6px;
+    font-size: 1.2rem;
+    padding: .4rem .7rem;
     border-radius: .45rem;
     cursor: pointer;
-    line-height: 0;
+    line-height: 1;
   }
   .read-aloud-btn {
     background: #233046;
@@ -163,17 +164,13 @@
    body.high-contrast-mode #contrast-toggle-btn {
     background-color: var(--bg);
     border-color: var(--line);
-   }
-   body.high-contrast-mode #contrast-toggle-btn img {
-    filter: invert(1);
+    color: var(--ink);
    }
 </style>
 </head>
 <body>
   <div id="accessibility-controls">
-    <button id="contrast-toggle-btn" title="Toggle High Contrast Mode">
-      <img src="https://i.imgur.com/hir3WMR.png" alt="Toggle High Contrast Mode" style="width: 24px; height: 24px; vertical-align: middle;">
-    </button>
+    <button id="contrast-toggle-btn" title="Toggle High Contrast Mode">♿</button>
   </div>
 
   <header class="top" id="main-header">
