@@ -127,10 +127,10 @@
     background: #233046;
     color: #e8ebf0;
     border: 1px solid #262a35;
-    font-weight: bold;
-    padding: .5rem .85rem;
+    padding: 6px;
     border-radius: .45rem;
     cursor: pointer;
+    line-height: 0;
   }
   .read-aloud-btn {
     background: #233046;
@@ -160,11 +160,20 @@
    body.high-contrast-mode a {
     color: var(--accent);
    }
+   body.high-contrast-mode #contrast-toggle-btn {
+    background-color: var(--bg);
+    border-color: var(--line);
+   }
+   body.high-contrast-mode #contrast-toggle-btn img {
+    filter: invert(1);
+   }
 </style>
 </head>
 <body>
   <div id="accessibility-controls">
-    <button id="contrast-toggle-btn" title="Toggle High Contrast Mode">🎨</button>
+    <button id="contrast-toggle-btn" title="Toggle High Contrast Mode">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAB9UlEQVR4nO2WzUtUURjG5/8/CIIgMsRisRBt2i8IIjS4sLC7s27Spk2bNm1atGmrNt2CaEFoWagLKiIuGpW2VUQUC8PFgoigYDB8vO/1bJjxwjA98Jz3ed/z/M57z3sFx3Gv+ADwB+ABGAFegDlwAegCV8B3Zk9m5u/L5b5RUtJjYtGO+x5I5C6Bw5NFIoHAU89Vf+b5J+A1s6fMbvK/GqASuMIsj5xOhk8C32b2Y2afNn2PAl8C9cBL4FOgB5zN7B3wE3jRXPOZ3f0X+AHoAP8BysC8H4A3wEREQ1sA180eMpsbM8s/N8DvwA/AmxVd/gR2Z/bLVvO/AlvAkea+3QCWmf1oN+e/AVYCM/pPAc+t5v+p3Z/Zt9bifwX+B/oAWeBnsz/N/P9rYOf32f8y83+rAU8Ci4HDgI7G/4YIMCa/BtwGvgbWAo3gG/AmMGf2s+U/30F+B6gDdqd/gD3gS9n84sJk7SswBpyb2d3m/3aAB+BsZj8w+/P5P01eAzeA3cyemPnfBvR6BbgObAHOgP7M/h0eCjxj9tzN/n/R0/fAP3AmMwddBnwJzAObgNvA7cy2ZvZk5hcyeyHzfQZk7Q/0mR3NbHrmfxvwGfAmMBaIN6Ue4CpwUvQ1hN+A5+i/l/wLzO3u/wC/AS+/0kG3+2BnzD5k9t+Z/T2zd2b+r8A3wFpgoPldzl5l9tXN/lfgFjAXaAZmN7O/zfxfge/AV2B/ZjdM1v4BdmV2U+b/7j/Avq/bA/80cw8/V+T3Zjb5J3AOmAJqgGPNfe0CeAx8Aczv7gNbgS7Gv/wAmAzsA3YDBYDT3V+AS8AuYBlY0txnWQSeA2uB8cy+NMt3k38FhgPjX4DlwAn3fQGeA+uBR4G7Jn9b24CVwNfMvjHzD4FHgf3AiOb+3AfuMftn9gLzRk1L1/8pYGhG30uYmR2Z+f464G9mPzA748k/AaeZuR34v/m9Aa+Zvdj837SgDnzEbBvy/y0/Af2ADGAd8L0d/uI/z/wGjD7mS/v7ZcDf3Wv8g9mZ2X+W558B5gJ9gGdgJ9CPf9QAV+DkIeI3gQvgIXAVsNfMfhr+5d/+c+YfG38BfF1fN4E83b0L/BGYD3wGjgOTgUeBTcDLzH7f3F/k5H/9v8N/L/k/93H8A22jQy/iLEi5AAAAAElFTkSuQmCC" alt="Toggle High Contrast Mode" style="width: 24px; height: 24px; vertical-align: middle;">
+    </button>
   </div>
 
   <header class="top" id="main-header">
