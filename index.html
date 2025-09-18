@@ -4,7 +4,6 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Lesson 8 — Traditional Pop in the 1940s and 50s</title>
-<script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.10.7/dist/index.umd.js"></script>
 <style>
   :root{--bg:#0e0f12;--ink:#e8ebf0;--muted:#b6bdc9;--card:#161821;--line:#262a35;--brand:#59d0ff;--accent:#ffd166}
   html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 'Segoe UI',system-ui,Roboto,sans-serif}
@@ -118,7 +117,7 @@
   .overlay-card button{width:100%;margin-bottom:.5rem}
   .overlay-card hr{border-color:var(--line);margin:1rem 0}
 
-  /* --- Accessibility & Celebration Additions --- */
+  /* --- Accessibility Additions --- */
   #accessibility-controls {
     position: fixed;
     top: .5rem;
@@ -168,49 +167,11 @@
     border-color: var(--line);
     color: var(--ink);
    }
-   #fireworks-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 10004;
-    background-color: rgba(0,0,0,0.8);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    text-align: center;
-   }
-   #fireworks-canvas {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-   }
-   .winner-text {
-    font-size: 3rem;
-    font-weight: bold;
-    color: var(--accent);
-    z-index: 1;
-   }
-   .winner-text small {
-    display: block;
-    font-size: 1.5rem;
-    color: var(--ink);
-    margin-top: .5rem;
-   }
 </style>
 </head>
 <body>
   <div id="accessibility-controls">
     <button id="contrast-toggle-btn" title="Toggle High Contrast Mode">♿</button>
-  </div>
-
-  <div id="fireworks-overlay" class="overlay hidden">
-    <canvas id="fireworks-canvas"></canvas>
-    <div class="winner-text">
-      Congratulations, <span id="winner-name"></span>!
-      <small>You won the quiz battle!</small>
-    </div>
   </div>
 
   <header class="top" id="main-header">
@@ -302,7 +263,6 @@
   let isPresenter = false; 
   let ix = 0; 
   let slidesEls;
-  let quizStateTracker = null;
   
   // ==================================================================
   // --- LESSON CONTENT ---
@@ -1110,19 +1070,6 @@ function startApp() {
     const battleStateRef = doc(db, `${sessionDataPath}/quizState/battle`);
     onSnapshot(battleStateRef, (docSnap) => {
       const state = docSnap.exists() ? docSnap.data() : { status: 'waiting', currentQuestion: -1 };
-      
-      if (quizStateTracker === 'in_progress' && state.status === 'finished') {
-         setTimeout(() => {
-            const leaderboardList = document.getElementById('leaderboard-list');
-            if (leaderboardList) {
-                const firstPlayer = leaderboardList.querySelector('.player-name');
-                if(firstPlayer && firstPlayer.textContent){
-                    showWinnerCelebration(firstPlayer.textContent);
-                }
-            }
-         }, 1000);
-      }
-      quizStateTracker = state.status;
       renderQuizState(state);
     });
 
@@ -1559,7 +1506,7 @@ function startApp() {
     }
   }
   
-  // --- ACCESSIBILITY & CELEBRATION FUNCTIONS ---
+  // --- ACCESSIBILITY & OTHER FUNCTIONS ---
   function toggleHighContrast() {
     document.body.classList.toggle('high-contrast-mode');
     const isHighContrast = document.body.classList.contains('high-contrast-mode');
@@ -1624,25 +1571,6 @@ function startApp() {
         correctButton.classList.add('correct-answer');
     }
   }
-
-  function showWinnerCelebration(winnerName) {
-    const overlay = document.getElementById('fireworks-overlay');
-    const canvas = document.getElementById('fireworks-canvas');
-    const winnerNameSpan = document.getElementById('winner-name');
-    if(!overlay || !canvas || !winnerNameSpan) return;
-
-    winnerNameSpan.textContent = winnerName;
-    overlay.classList.remove('hidden');
-
-    const fireworks = new Fireworks.default(canvas);
-    fireworks.start();
-
-    setTimeout(() => {
-        fireworks.stop();
-        overlay.classList.add('hidden');
-    }, 10000); // Stop fireworks after 10 seconds
-  }
-
 
   // --- GLOBAL EVENT LISTENERS ---
   document.getElementById('modalClose').addEventListener('click', hideModal);
