@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Lesson 8 — Traditional Pop in the 1940s and 50s</title>
+<script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.10.7/dist/index.umd.js"></script>
 <style>
   :root{--bg:#0e0f12;--ink:#e8ebf0;--muted:#b6bdc9;--card:#161821;--line:#262a35;--brand:#59d0ff;--accent:#ffd166}
   html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 'Segoe UI',system-ui,Roboto,sans-serif}
@@ -76,6 +77,7 @@
   .poll-option button{width:100%;text-align:left;padding:.5rem .8rem;background:0 0;border:0;color:var(--ink);cursor:pointer;position:relative;z-index:2}
   .poll-option button:disabled{cursor:not-allowed}
   .poll-option.voted-for button{font-weight:700}
+  .poll-option .correct-answer {background: rgba(6, 214, 160, .2) !important; border: 1px solid #06d6a0;}
   .poll-bar{position:absolute;top:0;left:0;height:100%;background:var(--brand);opacity:.2;transition:width .3s ease;z-index:1}
   .poll-percent{position:absolute;right:.8rem;top:50%;transform:translateY(-50%);font-size:.9em;font-weight:700;color:var(--ink);z-index:2}
 
@@ -116,7 +118,7 @@
   .overlay-card button{width:100%;margin-bottom:.5rem}
   .overlay-card hr{border-color:var(--line);margin:1rem 0}
 
-  /* --- Accessibility Additions --- */
+  /* --- Accessibility & Celebration Additions --- */
   #accessibility-controls {
     position: fixed;
     top: .5rem;
@@ -166,11 +168,49 @@
     border-color: var(--line);
     color: var(--ink);
    }
+   #fireworks-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10004;
+    background-color: rgba(0,0,0,0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+   }
+   #fireworks-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+   }
+   .winner-text {
+    font-size: 3rem;
+    font-weight: bold;
+    color: var(--accent);
+    z-index: 1;
+   }
+   .winner-text small {
+    display: block;
+    font-size: 1.5rem;
+    color: var(--ink);
+    margin-top: .5rem;
+   }
 </style>
 </head>
 <body>
   <div id="accessibility-controls">
     <button id="contrast-toggle-btn" title="Toggle High Contrast Mode">♿</button>
+  </div>
+
+  <div id="fireworks-overlay" class="overlay hidden">
+    <canvas id="fireworks-canvas"></canvas>
+    <div class="winner-text">
+      Congratulations, <span id="winner-name"></span>!
+      <small>You won the quiz battle!</small>
+    </div>
   </div>
 
   <header class="top" id="main-header">
@@ -262,6 +302,7 @@
   let isPresenter = false; 
   let ix = 0; 
   let slidesEls;
+  let quizStateTracker = null;
   
   // ==================================================================
   // --- LESSON CONTENT ---
@@ -269,17 +310,11 @@
   
   const SLIDES = [
     {
-        "id": "8.00a",
+        "id": "8.00",
         "title": "Lesson 8: Traditional Pop in the 1940s and 50s",
-        "bullets": [],
-        "full": "<img src='https://i.imgur.com/0RLPf1d.png' alt='A collage of traditional pop artists from the 1940s and 50s, including Frank Sinatra, Doris Day, and Perry Como.' style='width:100%; border-radius: .4rem;'/>",
-        "deep": []
-    },
-    {
-        "id": "8.00b",
-        "title": "Chapter Synopsis Video",
+        "headerImage": "https://i.imgur.com/dc5547.png",
         "bullets": ["Watch this short video for an overview of this chapter's content."],
-        "full": "<div style='position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;'><iframe src='https://player.vimeo.com/video/762001186?autoplay=1' style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;' frameborder='0' allow='autoplay; fullscreen' allowfullscreen title='Chapter Synopsis Video'></iframe></div>",
+        "full": "<div style='position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; margin-top: 1rem;'><iframe src='https://player.vimeo.com/video/762001186' style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;' frameborder='0' allow='fullscreen' allowfullscreen title='Chapter Synopsis Video'></iframe></div>",
         "deep": []
     },
     {
@@ -1075,8 +1110,20 @@ function startApp() {
     const battleStateRef = doc(db, `${sessionDataPath}/quizState/battle`);
     onSnapshot(battleStateRef, (docSnap) => {
       const state = docSnap.exists() ? docSnap.data() : { status: 'waiting', currentQuestion: -1 };
+      
+      if (quizStateTracker !== 'finished' && state.status === 'finished') {
+         setTimeout(() => {
+            const leaderboardList = document.getElementById('leaderboard-list');
+            const firstPlayer = leaderboardList.querySelector('.player-name');
+            if(firstPlayer){
+                showWinnerCelebration(firstPlayer.textContent);
+            }
+         }, 1000);
+      }
+      quizStateTracker = state.status;
       renderQuizState(state);
     });
+
     const scoresRef = collection(db, `${sessionDataPath}/scores`);
     onSnapshot(query(scoresRef), (snapshot) => {
       const scores = [];
@@ -1133,21 +1180,25 @@ function startApp() {
       }
       
       const startTime = state.questionStartTime;
-      timerInterval = setInterval(() => {
-          const elapsedSeconds = (new Date().getTime() - startTime) / 1000;
-          if (elapsedSeconds >= 15) {
-              timerArea.textContent = '0 points';
-              clearInterval(timerInterval);
-              if (localAnswers[qIndex] === undefined) {
-                  document.querySelectorAll('.choice-btn').forEach(btn => btn.disabled = true);
-                  const correctBtn = document.getElementById(`choice-${question.answer}`);
-                  if (correctBtn) correctBtn.classList.add('correct');
-                  if (feedbackArea) feedbackArea.textContent = "Time's up!";
-              }
-          } else {
-              timerArea.textContent = `${Math.round(1000 * (1 - (elapsedSeconds / 15)))} points`;
-          }
-      }, 100);
+      timerArea.textContent = 'Get Ready...';
+      
+      setTimeout(() => {
+        timerInterval = setInterval(() => {
+            const elapsedSeconds = (new Date().getTime() - startTime) / 1000;
+            if (elapsedSeconds >= 15) {
+                timerArea.textContent = '0 points';
+                clearInterval(timerInterval);
+                if (localAnswers[qIndex] === undefined) {
+                    document.querySelectorAll('.choice-btn').forEach(btn => btn.disabled = true);
+                    const correctBtn = document.getElementById(`choice-${question.answer}`);
+                    if (correctBtn) correctBtn.classList.add('correct');
+                    if (feedbackArea) feedbackArea.textContent = "Time's up!";
+                }
+            } else {
+                timerArea.textContent = `${Math.round(1000 * (1 - (elapsedSeconds / 15)))} points`;
+            }
+        }, 100);
+      }, 5000);
 
       if(localAnswers[qIndex] !== undefined) {
           clearInterval(timerInterval);
@@ -1184,11 +1235,13 @@ function startApp() {
       clearInterval(timerInterval);
       const question = BATTLE_QUIZ[qIndex], isCorrect = question.answer === choiceIndex;
       showAnswerFeedback(qIndex, choiceIndex);
+      const scoreRef = doc(db, `${sessionDataPath}/scores/${userId}`);
       if (isCorrect) {
           const elapsedSeconds = (new Date().getTime() - questionStartTime) / 1000;
           let points = (elapsedSeconds < 15) ? Math.round(1000 * (1 - (elapsedSeconds / 15))) : 0;
-          const scoreRef = doc(db, `${sessionDataPath}/scores/${userId}`);
           await setDoc(scoreRef, { correctAnswers: increment(1), timePoints: increment(points) }, { merge: true });
+      } else {
+          await setDoc(scoreRef, { timePoints: increment(-250) }, { merge: true });
       }
   };
 
@@ -1202,7 +1255,7 @@ function startApp() {
       } else {
           chosenBtn.classList.add('incorrect');
           correctBtn.classList.add('correct');
-          if (feedbackArea) { feedbackArea.textContent = 'Incorrect!'; feedbackArea.style.color = 'rgb(239, 71, 111)';}
+          if (feedbackArea) { feedbackArea.textContent = 'Incorrect! -250 points'; feedbackArea.style.color = 'rgb(239, 71, 111)';}
       }
   }
   
@@ -1273,11 +1326,15 @@ function startApp() {
             <button onclick="submitPollVote('${pollId}', ${ci})">${opt}</button>
         </div>
     `).join('');
+
+    const revealBtn = isPresenter ? `<button class="read-btn" style="margin-top:1rem;" onclick="revealPollAnswer('${pollId}', ${check.answer})">Reveal Answer</button>` : '';
+
     return `
         <div class="poll interactive-section" data-poll-id="${pollId}">
             <h3>Test Your Knowledge</h3>
             <p>${check.q}</p>
             <div class="choices">${choices}</div>
+            ${revealBtn}
         </div>
     `;
   }
@@ -1329,6 +1386,7 @@ function startApp() {
       const poll = pollHTML(s.poll, s.id);
       const buildaband = buildABandHTML(s.buildaband);
       const wordcloud = wordCloudHTML(s.wordcloud);
+      const headerImage = s.headerImage ? `<img src="${s.headerImage}" alt="${s.title}" style="width: 100%; border-radius: .4rem; margin-bottom: 1rem;" />` : '';
       
       let footerHTML = '';
       if (isPresenter) {
@@ -1346,6 +1404,7 @@ function startApp() {
               <button class="read-aloud-btn" id="read-aloud-btn-${idx}" onclick="readSlideAloud(${idx})">🔊 Read Aloud</button>
             </div>
           </header>
+          ${headerImage}
           <ul class="bullets">${bullets}</ul>
           ${s.full ? `<button class="read-btn" onclick="toggleFull(${idx})">Read Full Text</button>` : ''}
           <article id="full-${idx}" class="full" hidden>${s.full}</article>
@@ -1450,7 +1509,16 @@ function startApp() {
     }
   }
 
-  function toggleFull(i){ const el=document.getElementById('full-'+i); if(el) el.hidden=!el.hidden; }
+  function toggleFull(i){ 
+    const el=document.getElementById('full-'+i); 
+    if(el) {
+        el.hidden=!el.hidden;
+        const button = el.previousElementSibling;
+        if(button && button.classList.contains('read-btn')) {
+            button.textContent = el.hidden ? 'Read Full Text' : 'Hide Full Text';
+        }
+    }
+  }
   
   function setupDragAndDrop() {
     const instruments = document.querySelectorAll('.instrument');
@@ -1488,7 +1556,7 @@ function startApp() {
     }
   }
   
-  // --- ACCESSIBILITY FUNCTIONS ---
+  // --- ACCESSIBILITY & CELEBRATION FUNCTIONS ---
   function toggleHighContrast() {
     document.body.classList.toggle('high-contrast-mode');
     const isHighContrast = document.body.classList.contains('high-contrast-mode');
@@ -1545,6 +1613,33 @@ function startApp() {
     speechSynthesis.speak(utterance);
   }
 
+  function revealPollAnswer(pollId, correctIndex) {
+    const pollEl = document.querySelector(`[data-poll-id="${pollId}"]`);
+    if (!pollEl) return;
+    const correctButton = pollEl.querySelectorAll('.poll-option button')[correctIndex];
+    if(correctButton) {
+        correctButton.classList.add('correct-answer');
+    }
+  }
+
+  function showWinnerCelebration(winnerName) {
+    const overlay = document.getElementById('fireworks-overlay');
+    const canvas = document.getElementById('fireworks-canvas');
+    const winnerNameSpan = document.getElementById('winner-name');
+    if(!overlay || !canvas || !winnerNameSpan) return;
+
+    winnerNameSpan.textContent = winnerName;
+    overlay.classList.remove('hidden');
+
+    const fireworks = new Fireworks.default(canvas);
+    fireworks.start();
+
+    setTimeout(() => {
+        fireworks.stop();
+        overlay.classList.add('hidden');
+    }, 10000); // Stop fireworks after 10 seconds
+  }
+
 
   // --- GLOBAL EVENT LISTENERS ---
   document.getElementById('modalClose').addEventListener('click', hideModal);
@@ -1588,6 +1683,7 @@ function startApp() {
   window.submitQuestion = submitQuestion;
   window.upvoteQuestion = upvoteQuestion;
   window.readSlideAloud = readSlideAloud;
+  window.revealPollAnswer = revealPollAnswer;
   
 </script>
 </body>
