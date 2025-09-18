@@ -1111,12 +1111,14 @@ function startApp() {
     onSnapshot(battleStateRef, (docSnap) => {
       const state = docSnap.exists() ? docSnap.data() : { status: 'waiting', currentQuestion: -1 };
       
-      if (quizStateTracker !== 'finished' && state.status === 'finished') {
+      if (quizStateTracker === 'in_progress' && state.status === 'finished') {
          setTimeout(() => {
             const leaderboardList = document.getElementById('leaderboard-list');
-            const firstPlayer = leaderboardList.querySelector('.player-name');
-            if(firstPlayer){
-                showWinnerCelebration(firstPlayer.textContent);
+            if (leaderboardList) {
+                const firstPlayer = leaderboardList.querySelector('.player-name');
+                if(firstPlayer && firstPlayer.textContent){
+                    showWinnerCelebration(firstPlayer.textContent);
+                }
             }
          }, 1000);
       }
@@ -1183,6 +1185,7 @@ function startApp() {
       timerArea.textContent = 'Get Ready...';
       
       setTimeout(() => {
+        if (localAnswers[qIndex] !== undefined) return; // Don't start timer if already answered
         timerInterval = setInterval(() => {
             const elapsedSeconds = (new Date().getTime() - startTime) / 1000;
             if (elapsedSeconds >= 15) {
@@ -1201,7 +1204,6 @@ function startApp() {
       }, 5000);
 
       if(localAnswers[qIndex] !== undefined) {
-          clearInterval(timerInterval);
           showAnswerFeedback(qIndex, localAnswers[qIndex]);
       }
     }
@@ -1234,15 +1236,16 @@ function startApp() {
       localAnswers[qIndex] = choiceIndex;
       clearInterval(timerInterval);
       const question = BATTLE_QUIZ[qIndex], isCorrect = question.answer === choiceIndex;
-      showAnswerFeedback(qIndex, choiceIndex);
       const scoreRef = doc(db, `${sessionDataPath}/scores/${userId}`);
+
       if (isCorrect) {
           const elapsedSeconds = (new Date().getTime() - questionStartTime) / 1000;
-          let points = (elapsedSeconds < 15) ? Math.round(1000 * (1 - (elapsedSeconds / 15))) : 0;
+          let points = (elapsedSeconds >= 5 && elapsedSeconds < 20) ? Math.round(1000 * (1 - ((elapsedSeconds-5) / 15))) : 0;
           await setDoc(scoreRef, { correctAnswers: increment(1), timePoints: increment(points) }, { merge: true });
       } else {
           await setDoc(scoreRef, { timePoints: increment(-250) }, { merge: true });
       }
+      showAnswerFeedback(qIndex, choiceIndex);
   };
 
   function showAnswerFeedback(qIndex, choiceIndex) {
